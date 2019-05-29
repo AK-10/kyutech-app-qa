@@ -1,5 +1,4 @@
 import React from 'react';
-// import logo from './logo.svg';
 
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -11,7 +10,6 @@ import QAPanels from "./QAPanels";
 
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import { createMuiTheme } from "@material-ui/core/styles";
- 
 
 const theme = createMuiTheme({
   palette: {
@@ -49,61 +47,55 @@ const StyledQAPanels = styled(QAPanels)`
   padding: 10px;
 `;
 
-function App() {
-  const items = [
-    {
-      request:
-        "Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus, varius pulvinar diam eros in elit. Pellentesque",
-      requestPD:
-        "Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus, varius pulvinar diam eros in elit. Pellentesque",
-      answer:
-        "Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus, varius pulvinar diam eros in elit. Pellentesque",
-      },
-    {
-      request:
-        "Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus, varius pulvinar diam eros in elit. Pellentesque",
-      requestPD:
-        "Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus, varius pulvinar diam eros in elit. Pellentesque",
-      answer:
-        "Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus, varius pulvinar diam eros in elit. Pellentesque",
-    },
-    {
-      request:
-        "Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus, varius pulvinar diam eros in elit. Pellentesque",
-      requestPD:
-        "Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus, varius pulvinar diam eros in elit. Pellentesque",
-      answer:
-        "Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus, varius pulvinar diam eros in elit. Pellentesque",
-    },
-    {
-      request:
-        "Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus, varius pulvinar diam eros in elit. Pellentesque",
-      requestPD:
-        "Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus, varius pulvinar diam eros in elit. Pellentesque",
-      answer:
-        "Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus, varius pulvinar diam eros in elit. Pellentesque",
-    },
-    {
-      request:
-        "Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus, varius pulvinar diam eros in elit. Pellentesque",
-      requestPD:
-        null,
-      answer:
-        null
+class App extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      items: []
     }
-  ];
-  return (
-    <Wrapper>
-      <MuiThemeProvider theme={theme}>
-        <AppBar position="static">
-          <Toolbar>
-            <ToolbarTitle>九工大アプリ: 回答</ToolbarTitle>
-          </Toolbar>
-        </AppBar>
-        <StyledQAPanels items={items} />
-      </MuiThemeProvider>
-    </Wrapper>
-  );
+  }
+
+  componentDidMount(){
+    const json2items = json => {
+      return json.results.map(item => {
+        return {
+          request: item.opinion,
+          requestPD: item.request_pd,
+          answer: item.reply
+        }
+      })
+    }
+    return fetch("https://kyutechapp2018.planningdev.com/api/user-impressions/", {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    .then(response => response.json())
+    .then(responseJson => {
+      console.log(responseJson)
+      this.setState({
+        items: json2items(responseJson)
+      });
+    })
+    .catch(error => {
+      alert(error);
+    });
+  }
+
+  render() {
+    return (
+      <Wrapper>
+        <MuiThemeProvider theme={theme}>
+          <AppBar position="static">
+            <Toolbar>
+              <ToolbarTitle>九工大アプリ: 回答</ToolbarTitle>
+            </Toolbar>
+          </AppBar>
+          <StyledQAPanels items={this.state.items} />
+        </MuiThemeProvider>
+      </Wrapper>
+    );
+  }
 }
 
 export default App;
